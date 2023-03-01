@@ -13,7 +13,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     {/* <Suspense fallback={<Spinner />}> */}
-    {/* <Suspense> */}
     <RecoilRoot>
       <App />
     </RecoilRoot>

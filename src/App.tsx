@@ -1,32 +1,31 @@
 import React from 'react';
 import { atom, selector, useRecoilValue } from 'recoil';
 import axios from 'axios';
+import Calendar from './Component/Calender';
 
-const todoIdState = atom({
-  key: 'todoIdState',
-  default: 1
-})
+// const todoIdState = atom({
+//   key: 'todoIdState',
+//   default: 1
+// })
 
-const todoItemQuery = selector({
-  key: 'todoItemQuery',
-  get: async ({ get }) => {
-    const id = get(todoIdState);
+// const todoItemQuery = selector({
+//   key: 'todoItemQuery',
+//   get: async ({ get }) => {
+//     const id = get(todoIdState);
 
-    const response = await axios.get(`https://jsonplaceholder.typicode.com/todos/${id}`);
-    return response.data;
-  }
-})
+//     const response = await axios.get(`https://jsonplaceholder.typicode.com/todos/${id}`);
+//     return response.data;
+//   }
+// })
 
 function App() {
 
-  const data = useRecoilValue(todoItemQuery);
-  console.log(data)
+  // const data = useRecoilValue(todoItemQuery);
 
 
   return (
     <div className="App">
-      {data.title}
-      {data.userId}
+      <Calendar />
     </div>
   );
 }
