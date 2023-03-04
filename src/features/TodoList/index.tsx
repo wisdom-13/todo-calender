@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled/macro';
-
-interface Todo {
-  id: string;
-  content: string;
-  done: boolean;
-  date: Date;
-}
+import { Todo } from './atom';
 
 const TodoItem = styled.li<{ done?: boolean; selected?: boolean }>`
   max-width: 100px;
