@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled/macro';
+import { useRecoilValue, useRecoilState, useRecoilCallback } from 'recoil'
+import { v4 as uuidv4 } from 'uuid';
+import { getSimpleDateFormat } from '../../utils';
+
 import Modal from '../../Component/Modal';
+import { selectedDateState, todoListState } from '../TodoList/atom';
+import { todoFormModalOpenState } from './atom';
+
 
 const ModalBody = styled.div`
   width: 100vw;
@@ -37,16 +44,45 @@ const Card = styled.div`
 `;
 
 const TodoFormModal: React.FC = () => {
+  const [todo, setTodo] = useState<string>('');
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const selectedDate = useRecoilValue(selectedDateState);
+  const todoList = useRecoilValue(todoListState);
+
+  const [isOpen, setIsOpen] = useRecoilState(todoFormModalOpenState);
+
   const handleClose = () => setIsOpen(false);
+
+  const reset = () => {
+    setTodo('');
+  }
+
+  const addTodo = useRecoilCallback(({ snapshot, set }) => () => {
+    const todoList = snapshot.getLoadable(todoListState).getValue();
+
+    const newTodo = { id: uuidv4(), content: todo, done: false, date: selectedDate };
+
+    set(todoListState, [...todoList, newTodo]);
+  }, [todo, selectedDate, todoList])
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      addTodo();
+      reset();
+      handleClose();
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTodo(e.target.value);
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
       <ModalBody>
         <Card>
-          <Date>2023-03-02</Date>
-          <InputTodo placeholder='새로운 이벤트' />
+          <Date>{getSimpleDateFormat(selectedDate)}</Date>
+          <InputTodo placeholder='새로운 이벤트' onKeyPress={handleKeyPress} value={todo} onChange={handleChange} />
         </Card>
       </ModalBody>
     </Modal>
