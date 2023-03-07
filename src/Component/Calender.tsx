@@ -2,7 +2,11 @@ import React, { useMemo, useState } from 'react';
 import styled from '@emotion/styled/macro';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 
-import { isSameDay } from '../utils';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { selectedDateState, todoListState } from '../features/TodoList/atom';
+import CalenderDay from './CalenderDay';
+import TodoFormModal from '../features/TodoFormModal';
+import TodoStatisticsModal from '../features/TodoStatisticsModal';
 
 const Header = styled.div`
   width: 100%;
@@ -63,22 +67,6 @@ const TableData = styled.td`
   position: relative;
 `;
 
-const DisplayDate = styled.div<{ isToday?: boolean; isSelected?: boolean; }>`
-  color: ${({ isToday }) => isToday && '#F8F7FA'};
-  background-color: ${({ isToday, isSelected }) => isSelected ? '#7047EB' : isToday ? '#313133' : ''};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  align-self: flex-end;
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-`;
-
 const Base = styled.div`
   width: 100%;
   height: 100vh;
@@ -100,7 +88,9 @@ const MONTHS = ["January", "February", "March", "April", "May", "June",
 ];
 
 const Calendar: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date()); // 선택한 날짜 상태
+  const selectedDate = useRecoilValue(selectedDateState);
+
+  const setSelectedDate = useSetRecoilState(selectedDateState);
 
   const { year, month, firstDay, lastDay } = useMemo(() => { // 선택한 날짜를 기준으로 연, 월, 일, 해당 월의 첫째 날짜, 해달 월의 마지막 날짜 가져온다.
     const year = selectedDate.getFullYear();
@@ -125,12 +115,7 @@ const Calendar: React.FC = () => {
     const today = new Date();
 
     return (
-      <TableData key={d} onClick={() => selectDate(thisDay)}>
-        <DisplayDate
-          isSelected={isSameDay(selectedDate, thisDay)}
-          isToday={isSameDay(today, thisDay)}
-        >{new Date(year, month, d + 1).getDate()}</DisplayDate>
-      </TableData>
+      <CalenderDay date={thisDay} />
     )
   });
 
@@ -173,7 +158,12 @@ const Calendar: React.FC = () => {
           {render()}
         </TableBody>
       </Table>
+
+      <TodoFormModal />
+      <TodoStatisticsModal />
     </Base>
+
+
   )
 }
 

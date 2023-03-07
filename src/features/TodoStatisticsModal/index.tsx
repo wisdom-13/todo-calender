@@ -6,6 +6,7 @@ import { useRecoilValue, useRecoilState } from 'recoil'
 import Modal from '../../Component/Modal';
 import { todoStatisicsModalOpenState, todoStatisticsState } from './atom';
 import { filteredTodoListState, selectedDateState, todoListState } from '../TodoList/atom';
+import { getSimpleDateFormat } from '../../utils';
 
 const ModalBody = styled.div`
   width : 100vw;
@@ -91,7 +92,7 @@ const TodoStatisticsModal: React.FC = () => {
     <Modal isOpen={isOpen} onClose={handleClose}>
       <ModalBody>
         <Card>
-          <Date>2023-03-03</Date>
+          <Date>{getSimpleDateFormat(selectedDate)}</Date>
           <Statistics>할 일 {statistics.total - statistics.done}개 남음</Statistics>
           <TodoList>
             {
@@ -112,3 +113,5 @@ const TodoStatisticsModal: React.FC = () => {
     </Modal>
   )
 }
+
+export default TodoStatisticsModal;
