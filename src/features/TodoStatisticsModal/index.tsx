@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled/macro';
 import { HiOutlineTrash } from 'react-icons/hi'
+import { useRecoilValue, useRecoilState } from 'recoil'
+
 import Modal from '../../Component/Modal';
+import { todoStatisicsModalOpenState, todoStatisticsState } from './atom';
+import { filteredTodoListState, selectedDateState, todoListState } from '../TodoList/atom';
 
 const ModalBody = styled.div`
   width : 100vw;
@@ -67,11 +71,20 @@ const Card = styled.div`
 `;
 
 const TodoStatisticsModal: React.FC = () => {
+  const [todoList, setTodoList] = useRecoilState(todoListState);
+  const [isOpen, setIsOpen] = useRecoilState(todoStatisicsModalOpenState);
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const selectedDate = useRecoilValue(selectedDateState);
+
+  const filteredTodoList = useRecoilValue(filteredTodoListState(selectedDate));
+  const statistics = useRecoilValue(todoStatisticsState(selectedDate));
 
   const handleClose = () => {
     setIsOpen(false);
+  }
+
+  const removeTodo = (id: string) => {
+    setTodoList(todoList.filter(todo => todo.id !== id));
   }
 
   return (
@@ -79,16 +92,20 @@ const TodoStatisticsModal: React.FC = () => {
       <ModalBody>
         <Card>
           <Date>2023-03-03</Date>
-          <Statistics>할 일 0개 남음</Statistics>
+          <Statistics>할 일 {statistics.total - statistics.done}개 남음</Statistics>
           <TodoList>
-            <TodoItem>
-              <Content></Content>
-              <TodoActions>
-                <TodoActionButton>
-                  <HiOutlineTrash />
-                </TodoActionButton>
-              </TodoActions>
-            </TodoItem>
+            {
+              filteredTodoList?.map(todo => (
+                <TodoItem key={todo.id}>
+                  <Content>{todo.content}</Content>
+                  <TodoActions>
+                    <TodoActionButton secondary onClick={() => removeTodo(todo.id)}>
+                      <HiOutlineTrash />
+                    </TodoActionButton>
+                  </TodoActions>
+                </TodoItem>
+              ))
+            }
           </TodoList>
         </Card>
       </ModalBody>
