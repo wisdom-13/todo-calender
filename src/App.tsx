@@ -1,7 +1,7 @@
 import React from 'react';
 import { atom, RecoilRoot, selector, useRecoilValue } from 'recoil';
 import axios from 'axios';
-import Calendar from './Component/Calender';
+import Calender from './Component/Calender';
 import TodoFormModal from './features/TodoFormModal';
 
 // const todoIdState = atom({
@@ -26,7 +26,7 @@ function App() {
 
   return (
     <RecoilRoot>
-      <Calendar />
+      <Calender />
     </RecoilRoot>
   );
 }

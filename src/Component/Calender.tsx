@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled/macro';
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi';
 
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { selectedDateState, todoListState } from '../features/TodoList/atom';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { selectedDateState, selectedTodoState, todoListState } from '../features/TodoList/atom';
 import CalenderDay from './CalenderDay';
 import TodoFormModal from '../features/TodoFormModal';
 import TodoStatisticsModal from '../features/TodoStatisticsModal';
@@ -68,7 +68,7 @@ const TableData = styled.td`
 `;
 
 const Base = styled.div`
-  width: 100%;
+  width: 700px;
   height: 100vh;
   padding: 24px 12px;
   display: flex;
@@ -79,6 +79,8 @@ const Base = styled.div`
   ${Header} + ${Table} {
     margin-top: 36px;
   }
+  margin: auto;
+  border-radius: 10px;
 `;
 
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -87,8 +89,9 @@ const MONTHS = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
 
-const Calendar: React.FC = () => {
+const Calender: React.FC = () => {
   const selectedDate = useRecoilValue(selectedDateState);
+  const todoList = useRecoilValue(todoListState);
 
   const setSelectedDate = useSetRecoilState(selectedDateState);
 
@@ -131,6 +134,23 @@ const Calendar: React.FC = () => {
     ));
   }
 
+  const removeTodo = useRecoilCallback(({ snapshot, set }) => () => {
+    const todoList = snapshot.getLoadable(todoListState).getValue();
+    const selectedTodo = snapshot.getLoadable(selectedTodoState).getValue();
+
+    set(todoListState, todoList.filter(todo => todo.id !== selectedTodo?.id));
+  }, [selectDate, todoList]);
+
+  useEffect(() => {
+    const onBackspaceKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Backspace') {
+        removeTodo();
+      }
+    }
+
+    window.addEventListener('keydown', onBackspaceKeyDown);
+  }, [removeTodo])
+
   return (
     <Base>
       <Header>
@@ -162,9 +182,7 @@ const Calendar: React.FC = () => {
       <TodoFormModal />
       <TodoStatisticsModal />
     </Base>
-
-
   )
 }
 
-export default Calendar;
+export default Calender;

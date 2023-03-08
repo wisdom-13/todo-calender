@@ -14,6 +14,8 @@ interface Props {
 }
 
 const TableData = styled.td`
+  width: 10%;
+  max-width: 100px;
   text-align: center;
   color: #C9C8CC;
   padding: 8px;
